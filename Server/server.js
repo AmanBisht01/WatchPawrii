@@ -1,10 +1,10 @@
 const express = require("express");
-// const http = require("http");
-const socketio = require("socket.io");
+const http = require("http");
+const { Server } = require("socket.io");
 const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 const app = express();
-// const server = http.createServer(app);
+const server = http.createServer(app);
 // const io = socketio(server);
 
 const PORT = process.env.PORT || 5000;
@@ -19,11 +19,7 @@ const botName = "weWatch Bot";
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
-const io = require("socket.io")(8000, {
-  cors: {
-    origin: "*",
-  },
-});
+const io = new Server(server);
 
 app.get("/room", (req, res) => {
   const room = createNewRoom();
@@ -162,11 +158,11 @@ io.on("connection", (socket) => {
       // io.to(room).emit("roomUsers", { users });
 
       // Delete room if there are no users
-      // if (Object.keys(rooms[room].users).length === 0) delete rooms[room];
+      if (Object.keys(rooms[room].users).length === 0) delete rooms[room];
     });
   });
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
